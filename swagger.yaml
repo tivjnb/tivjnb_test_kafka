@@ -1,0 +1,82 @@
+openapi: "3.0.1"
+info:
+  title: Pulse API
+  version: "1.0"
+servers:
+  - url: http://localhost:5000/queue
+paths:
+  /set_data:
+    post:
+      summary: Запись данных в очередь
+      description: |
+        Данные data записывается в kafka в очередь с topic: 'asutk_ms_{receiver_id}'
+      operationId: set_data
+      requestBody:
+        description: Входные параметры
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                receiver_id:
+                  $ref: "#/components/schemas/receiver_id"
+                sender_id:
+                  $ref: "#/components/schemas/sender_id"
+                data:
+                  $ref: "#/components/schemas/data"
+              required:
+                - receiver_id
+                - sender_id
+                - data
+      responses:
+        "200":
+          description: |
+            Возвращается в случае успеной отправки сообщения
+  /get_data:
+    get:
+      summary: |
+        Получение сообщения из соответствующего topic
+      description: |
+        Используется для получения сообщения из topic 'asutk_ms_{receiver_id}'
+      parameters:
+        - $ref: "#/components/parameters/receiver_id"
+      operationId: getProfile
+      responses:
+        "200":
+          description: Сообщение из топика получено
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/data"
+        "400":
+          description: |
+            В данном топике нет сообщений
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Сообщение об ошибке
+
+components:
+  schemas:
+    receiver_id:
+      type: string
+      description: ID топика, в который будет записанно сообщение
+    sender_id:
+      type: string
+      description: ID отправителя
+    data:
+      type: object
+      description: Сообщение в формате json
+  parameters:
+    receiver_id:
+      in: query
+      name: receiver_id
+      required: true
+      description: |
+        ID топика, из которого будет взято сообщение
+      schema:
+        type: string
+        description: |
+          ID топика, из которого будет взято сообщение
