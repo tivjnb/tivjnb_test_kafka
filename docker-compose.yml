@@ -38,5 +38,4 @@ services:
       environment:
         - KAFKA_HOST=host.docker.internal
         - KAFKA_PORT=9092
-      command: [ "python", "main.py" ]
 
